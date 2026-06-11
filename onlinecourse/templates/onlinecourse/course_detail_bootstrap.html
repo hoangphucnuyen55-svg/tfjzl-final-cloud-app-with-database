@@ -10,7 +10,6 @@
 </head>
 
 <body>
-    <!-- Navigation bar -->
     <nav class="navbar navbar-light bg-light">
         <div class="container-fluid">
             <div class="navbar-header">
@@ -39,7 +38,6 @@
         </div>
     </nav>
 
-    <!-- Page content -->
     <div class="container-fluid">
             <h2>{{ course.name }}</h2>
             <div class="card-columns-vertical">
@@ -50,7 +48,42 @@
                     </div>
                 {% endfor %}
             </div>
-            <!-- Course detail template changes go here -->
+
+            {% if user.is_authenticated %}
+            <div class="mt-4">
+                <button class="btn btn-info btn-block" data-toggle="collapse" data-target="#exam-section">
+                    Start Exam
+                </button>
+                
+                <div id="exam-section" class="collapse mt-3">
+                    <div class="card">
+                        <div class="card-header"><h4>Course Exam</h4></div>
+                        <div class="card-body">
+                            <form id="exam-form" action="{% url 'onlinecourse:submit' course.id %}" method="post">
+                                {% csrf_token %}
+                                {% for question in course.question_set.all %}
+                                    <div class="card mt-2">
+                                        <div class="card-header"><h5>{{ question.content }}</h5></div>
+                                        <div class="card-body">
+                                            {% for choice in question.choice_set.all %}
+                                                <div class="form-check">
+                                                    <label class="form-check-label">
+                                                        <input type="checkbox" name="choice_{{ choice.id }}" 
+                                                               class="form-check-input" value="{{ choice.id }}">
+                                                        {{ choice.content }}
+                                                    </label>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                                <button class="btn btn-primary btn-block mt-3" type="submit">Submit Exam</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
     </div>
 </body>
 </html>
